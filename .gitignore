@@ -1,0 +1,6 @@
+.vscode
+bin
+build
+lib
+skylark.code-workspace
+_build.bat
