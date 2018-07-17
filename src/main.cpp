@@ -1,8 +1,11 @@
 #include <SFML/Graphics.hpp>
+#include "emu/chip8.hpp"
 
-int main()
+int main(int argc, char** argv)
 {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML window");
+    chip8 cpu;
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Skylark");
+    sf::Texture texture;
 
     while (window.isOpen())
     {
@@ -12,8 +15,10 @@ int main()
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-        window.clear({255,255,255});
+
+        window.clear({0,0,0});
         window.display();
     }
-    return EXIT_SUCCESS;
+
+    return 0;
 }
