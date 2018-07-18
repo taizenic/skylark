@@ -30,53 +30,81 @@ int main(int argc, char** argv)
     cpu->load(argv[1]);
 
     sf::RenderWindow window(sf::VideoMode(WIDTH*10, HEIGHT*10, 8), "Skylark");
+
     sf::Clock clock;
-    //window.setSize(sf::Vector2u(WIDTH*10, HEIGHT*10));
+
+    sf::Texture texture;
+    texture.create(WIDTH, HEIGHT);
+    u8 pixels[HEIGHT][WIDTH][4] {0u};
+    texture.update((u8*)&pixels);
+
+    sf::Sprite sprite;
+    sprite.setTexture(texture);
+    sprite.setScale(10,10);
+
+    u32 ticks = 0;
 
     while (window.isOpen())
     {
-        if(clock.getElapsedTime().asSeconds() >= 1/IPS)
+        sf::Event event;
+        while (window.pollEvent(event))
         {
-            window.clear();
-
-            sf::Event event;
-            while (window.pollEvent(event))
+            if (event.type == sf::Event::Closed)
+                window.close();
+            else if(event.type == sf::Event::KeyPressed)
             {
-                if (event.type == sf::Event::Closed)
-                    window.close();
-                else if(event.type == sf::Event::KeyPressed)
+                for(u32 i = 0; i < 16; i++)
                 {
-                    for(u32 i = 0; i < 16; i++)
-                    {
-                        if(keymap[i] == event.key.code)
-                            cpu->pad[i] = 1u;
-                    }
-                }
-                else if(event.type == sf::Event::KeyReleased)
-                {
-                    for(u32 i = 0; i < 16; i++)
-                    {
-                        if(keymap[i] == event.key.code)
-                            cpu->pad[i] = 0u;
-                    }
+                    if(keymap[i] == event.key.code)
+                        cpu->pad[i] = 1u;
                 }
             }
+            else if(event.type == sf::Event::KeyReleased)
+            {
+                for(u32 i = 0; i < 16; i++)
+                {
+                    if(keymap[i] == event.key.code)
+                        cpu->pad[i] = 0u;
+                }
+            }
+        }
+        
+        if(clock.getElapsedTime().asSeconds() >= 1/IPS)
+        {
+            ticks++;
 
             cpu->nextop();
 
-            sf::RectangleShape rect(sf::Vector2f(10,10));
-            for(int i = 0; i < HEIGHT; i++)
+            if(cpu->dt > 0u) cpu->dt--;
+            if(cpu->st > 0u) cpu->st--;
+
+            if(cpu->drawflag)
             {
-                for(int j = 0; j < WIDTH; j++)
+                window.clear({0,0,0});
+                for(int i = 0; i < HEIGHT; i++)
                 {
-                    if(cpu->vram[i][j] != 0)
+                    for(int j = 0; j < WIDTH; j++)
                     {
-                        rect.setPosition((float)j*10, (float)i*10);
-                        window.draw(rect);
+                        if(cpu->vram[i][j] != 0)
+                        {
+                            pixels[i][j][0] = 0xff;
+                            pixels[i][j][1] = 0xff;
+                            pixels[i][j][2] = 0xff;
+                            pixels[i][j][3] = 0xff;
+                        }
+                        else
+                        {
+                            pixels[i][j][0] = 0x00;
+                            pixels[i][j][1] = 0x00;
+                            pixels[i][j][2] = 0x00;
+                            pixels[i][j][3] = 0xff;
+                        }
                     }
                 }
+                texture.update((u8*)&pixels);
+                window.draw(sprite);
+                window.display();
             }
-            window.display();
         }
         clock.restart();
     }

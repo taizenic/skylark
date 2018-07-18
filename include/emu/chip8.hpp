@@ -16,6 +16,8 @@ struct chip8
     u8 dt {0u}; //delay timer
     u8 st {0u}; //sound timer
 
+    bool drawflag {false};
+
     void init(); //initializes interpreter
     void load(const char* fname); //loads file into memory
     void nextop(); //executes next opcode

@@ -65,6 +65,7 @@ void chip8::nextop()
             {
                 case 0x00E0:
                     std::memset(&vram,0u,WIDTH*HEIGHT);
+                    drawflag = true;
                     break;
                 case 0x00EE:
                     pc = stack[--sp];
@@ -159,11 +160,11 @@ void chip8::nextop()
                     if((ram[this->i+i] & (0b10000000 >> j)) != 0u)
                     {
                         if(vram[v[y]+i][v[x]+j] != 0u) v[0xf] = 1u;
-
                         vram[v[y]+i][v[x]+j] ^= 1u;
                     }
                 }
             }
+            drawflag = true;
             break;
         case 0xE000:
             switch(opcode & 0x00ff)
@@ -193,7 +194,7 @@ void chip8::nextop()
                                 pressed = true;
                             }
                         }
-                        if(!pressed) return;
+                        if(!pressed) pc -= 2;
                     }
                     break;
                 case 0x0015:
@@ -230,7 +231,4 @@ void chip8::nextop()
             break;
     }
     pc += 2;
-
-    if(dt > 0u) dt--;
-    if(st > 0u) st--;
 }
