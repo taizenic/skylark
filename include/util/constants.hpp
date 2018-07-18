@@ -1,5 +1,6 @@
 #pragma once
 
-#define W 64
-#define H 32
+#define WIDTH 64
+#define HEIGHT 32
 #define MAX_STACK 16
+#define IPS 60

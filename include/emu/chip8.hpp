@@ -4,41 +4,19 @@
 
 struct chip8
 {
-    union
-    {
-        u8 ram[4096]; //4k of memory
-        u8 font[16][5] =
-        {
-            {0xF0, 0x90, 0x90, 0x90, 0xF0}, // 0
-            {0x20, 0x60, 0x20, 0x20, 0x70}, // 1
-            {0xF0, 0x10, 0xF0, 0x80, 0xF0}, // 2
-            {0xF0, 0x10, 0xF0, 0x10, 0xF0}, // 3
-            {0x90, 0x90, 0xF0, 0x10, 0x10}, // 4
-            {0xF0, 0x80, 0xF0, 0x10, 0xF0}, // 5
-            {0xF0, 0x80, 0xF0, 0x90, 0xF0}, // 6
-            {0xF0, 0x10, 0x20, 0x40, 0x40}, // 7
-            {0xF0, 0x90, 0xF0, 0x90, 0xF0}, // 8
-            {0xF0, 0x90, 0xF0, 0x10, 0xF0}, // 9
-            {0xF0, 0x90, 0xF0, 0x90, 0x90}, // A
-            {0xE0, 0x90, 0xE0, 0x90, 0xE0}, // B
-            {0xF0, 0x80, 0x80, 0x80, 0xF0}, // C
-            {0xE0, 0x90, 0x90, 0x90, 0xE0}, // D
-            {0xF0, 0x80, 0xF0, 0x80, 0xF0}, // E
-            {0xF0, 0x80, 0xF0, 0x80, 0x80}  // F
-        };
-    };
-    u8 vram[W][H] {0}; //graphics ram. resolution is 64x32
-    u8 v[16] {0}; //16 8-bit registers
-    u16 i {0}; //a 16-bit register
-    u16 pc {0}; //program counter
-    u16 opcode {0}; //current opcode at mem[pc]
-    u16 stack[MAX_STACK] {0}; //stack with 16 levels
-    u16 sp {0}; //stack pointer. points to top level of stack
-    u8 pad[16] {0}; //input
-    u8 dt {0}; //delay timer
-    u8 st {0}; //sound timer
+    u8 ram[4096] {0u}; //4k of memory
+    u8 vram[HEIGHT][WIDTH] {0u}; //graphics ram. resolution is 64x32
+    u8 v[16] {0u}; //16 8-bit registers
+    u16 i {0u}; //a 16-bit register
+    u16 pc {0u}; //program counter
+    u16 opcode {0u}; //current opcode at mem[pc]
+    u16 stack[MAX_STACK] {0u}; //stack with 16 levels
+    u16 sp {0u}; //stack pointer. points to top level of stack
+    u8 pad[16] {0u}; //input
+    u8 dt {0u}; //delay timer
+    u8 st {0u}; //sound timer
 
-    void init(); //initializes 
-    void load(const char* fname); //loads rom into memory
+    void init(); //initializes interpreter
+    void load(const char* fname); //loads file into memory
     void nextop(); //executes next opcode
 };
