@@ -151,6 +151,7 @@ void chip8::nextop()
             v[x] = dist(rng) & nn;
             break;
         case 0xD000:
+            v[0xf] = 0u;
             for(u8 i = 0; i < n; i++)
             {
                 for(u8 j = 0; j < 8; j++)
@@ -158,7 +159,6 @@ void chip8::nextop()
                     if((ram[this->i+i] & (0b10000000 >> j)) != 0u)
                     {
                         if(vram[v[y]+i][v[x]+j] != 0u) v[0xf] = 1u;
-                        else v[0xf] = 0u;
 
                         vram[v[y]+i][v[x]+j] ^= 1u;
                     }
@@ -169,10 +169,10 @@ void chip8::nextop()
             switch(opcode & 0x00ff)
             {
                 case 0x009E:
-                    if(pad[v[x]]) pc += 2;
+                    if(pad[v[x]] != 0) pc += 2;
                     break;
                 case 0x00A1:
-                    if(!pad[v[x]]) pc += 2;
+                    if(pad[v[x]] == 0) pc += 2;
                     break;
             }
             break;
@@ -183,17 +183,18 @@ void chip8::nextop()
                     v[x] = dt;
                     break;
                 case 0x000A:
-                    bool pressed = false;
-                    for(u32 i = 0; i < 16; i++)
                     {
-                        if(pad[i] != 0u)
+                        bool pressed = false;
+                        for(u32 i = 0; i < 16; i++)
                         {
-                            v[x] = i;
-                            pressed = true;
+                            if(pad[i] != 0u)
+                            {
+                                v[x] = i;
+                                pressed = true;
+                            }
                         }
+                        if(!pressed) return;
                     }
-                    if(!pressed) return;
-
                     break;
                 case 0x0015:
                     dt = v[x];
@@ -215,11 +216,11 @@ void chip8::nextop()
                     ram[i+2] = v[x] % 10;
                     break;
                 case 0x0055:
-                    for(u32 i = 0; i < x; i++) ram[this->i+i] = v[i];
+                    for(u32 i = 0; i <= x; i++) ram[this->i+i] = v[i];
                     i += v[x] + 1;
                     break;
                 case 0x0065:
-                    for(u32 i = 0; i < x; i++) v[i] = ram[this->i+i];
+                    for(u32 i = 0; i <= x; i++) v[i] = ram[this->i+i];
                     i += v[x] + 1;
                     break;
             }
