@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "emu/chip8.hpp"
+#include "emu/apu.hpp"
 
 sf::Keyboard::Key keymap[16]
 {
@@ -28,6 +29,9 @@ int main(int argc, char** argv)
     chip8* cpu = new chip8;
     cpu->init();
     cpu->load(argv[1]);
+
+    apu* audio = new apu;
+    audio->init();
 
     sf::RenderWindow window(sf::VideoMode(WIDTH*10, HEIGHT*10, 8), "Skylark");
 
@@ -76,7 +80,11 @@ int main(int argc, char** argv)
             cpu->nextop();
 
             if(cpu->dt > 0u) cpu->dt--;
-            if(cpu->st > 0u) cpu->st--;
+            if(cpu->st > 0u) 
+            {
+                cpu->st--;
+                audio->play();
+            } else audio->stop();
 
             if(cpu->drawflag)
             {
