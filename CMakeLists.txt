@@ -11,5 +11,5 @@ include_directories(${CMAKE_SOURCE_DIR}/include)
 link_directories(${CMAKE_SOURCE_DIR}/lib)
 file(GLOB_RECURSE SRC "src/*.cpp")
 
-add_executable(skylark WIN32 ${SRC})
+add_executable(skylark WIN32 ${SRC} ${CMAKE_SOURCE_DIR}/rc/icon.rc)
 target_link_libraries(skylark sfml-main sfml-graphics sfml-window sfml-audio sfml-system gdi32 winmm opengl32 openal32 vorbisfile vorbisenc vorbis ogg freetype FLAC)
