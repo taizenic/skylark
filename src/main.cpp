@@ -1,5 +1,4 @@
 #include <SFML/Graphics.hpp>
-#include <iostream>
 #include "emu/chip8.hpp"
 #include "emu/apu.hpp"
 

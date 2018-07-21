@@ -17,6 +17,7 @@ struct chip8
     u8 st {0u}; //sound timer
 
     bool drawflag {false};
+    bool waitingkey {false};
 
     void init(); //initializes interpreter
     void load(const char* fname); //loads file into memory

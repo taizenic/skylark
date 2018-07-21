@@ -1,7 +1,6 @@
 #include <cstring>
 #include <random>
 #include <fstream>
-#include <iostream>
 #include "emu/chip8.hpp"
 
 static std::random_device device;
@@ -117,24 +116,22 @@ void chip8::nextop()
                     v[x] += v[y];
                     break;
                 case 0x0005:
-                    if(v[y] > (0xff - v[x])) v[0xf] = 0u;
+                    if(v[y] > v[x]) v[0xf] = 0u;
                     else v[0xf] = 1u;
                     v[x] -= v[y];
                     break;
                 case 0x0006:
                     v[0xf] = v[x] & 1u;
-                    v[x] = v[y] >> 1;
-                    //v[x] >>= 1;
+                    v[x] >>= 1;
                     break;
                 case 0x0007:
-                    if(v[y] < (0xff - v[x])) v[0xf] = 0u;
+                    if(v[y] < v[x]) v[0xf] = 0u;
                     else v[0xf] = 1u;
                     v[x] = v[y] - v[x];
                     break;
                 case 0x000E:
                     v[0xf] = (v[x] & 0b10000000) >> 7;
-                    v[x] = v[y] << 1;
-                    //v[x] <<= 1;
+                    v[x] <<= 1;
                     break;
             }
             break;
@@ -185,6 +182,7 @@ void chip8::nextop()
                     break;
                 case 0x000A:
                     {
+                        waitingkey = true;
                         bool pressed = false;
                         for(u32 i = 0; i < 16; i++)
                         {
@@ -192,6 +190,7 @@ void chip8::nextop()
                             {
                                 v[x] = i;
                                 pressed = true;
+                                waitingkey = false;
                             }
                         }
                         if(!pressed) pc -= 2;
@@ -218,11 +217,11 @@ void chip8::nextop()
                     break;
                 case 0x0055:
                     for(u32 i = 0; i <= x; i++) ram[this->i+i] = v[i];
-                    i += v[x] + 1;
+                    i += x + 1;
                     break;
                 case 0x0065:
                     for(u32 i = 0; i <= x; i++) v[i] = ram[this->i+i];
-                    i += v[x] + 1;
+                    i += x + 1;
                     break;
             }
             break;
