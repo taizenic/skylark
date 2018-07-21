@@ -1,4 +1,5 @@
 #include <SFML/Graphics.hpp>
+#include <iostream>
 #include "emu/chip8.hpp"
 #include "emu/apu.hpp"
 
@@ -46,8 +47,6 @@ int main(int argc, char** argv)
     sprite.setTexture(texture);
     sprite.setScale(10,10);
 
-    u32 ticks = 0;
-
     while (window.isOpen())
     {
         sf::Event event;
@@ -75,8 +74,6 @@ int main(int argc, char** argv)
         
         if(clock.getElapsedTime().asSeconds() >= 1/IPS)
         {
-            ticks++;
-
             cpu->nextop();
 
             if(cpu->dt > 0u) cpu->dt--;
