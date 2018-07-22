@@ -1,3 +1,4 @@
+#include <cstring>
 #include <SFML/Graphics.hpp>
 #include "emu/chip8.hpp"
 #include "emu/apu.hpp"
@@ -22,15 +23,34 @@ sf::Keyboard::Key keymap[16]
     sf::Keyboard::Key::Z
 };
 
+chip8* cpu;
+apu* audio;
+u8 pixels[HEIGHT][WIDTH][4] {0u};
+
+void reset(char* fname)
+{
+    delete cpu;
+    delete audio;
+
+    cpu = new chip8;
+    cpu->init();
+    cpu->load(fname);
+
+    audio = new apu;
+    audio->init();
+
+    std::memset(pixels,0u,HEIGHT*WIDTH*4);
+}
+
 int main(int argc, char** argv)
 {
     if(argc == 1) return 1;
 
-    chip8* cpu = new chip8;
+    cpu = new chip8;
     cpu->init();
     cpu->load(argv[1]);
 
-    apu* audio = new apu;
+    audio = new apu;
     audio->init();
 
     sf::RenderWindow window(sf::VideoMode(WIDTH*10, HEIGHT*10, 8), "Skylark");
@@ -39,7 +59,6 @@ int main(int argc, char** argv)
 
     sf::Texture texture;
     texture.create(WIDTH, HEIGHT);
-    u8 pixels[HEIGHT][WIDTH][4] {0u};
     texture.update((u8*)&pixels);
 
     sf::Sprite sprite;
@@ -60,6 +79,8 @@ int main(int argc, char** argv)
                     if(keymap[i] == event.key.code)
                         cpu->pad[i] = 1u;
                 }
+                if(event.key.code == sf::Keyboard::Key::F1)
+                    reset(argv[1]);
             }
             else if(event.type == sf::Event::KeyReleased)
             {
